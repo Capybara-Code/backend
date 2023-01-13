@@ -45,6 +45,23 @@ func GetOneCourse(db *gorm.DB) gin.HandlerFunc {
 
 }
 
+func GetCoursesByAuthor(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		author := c.Param("user_id")
+		courses, err := Models.Course{}.FindOneByAuthor(db, author)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get course",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"course": courses,
+		})
+	}
+}
+
 func CreateNewCourse(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var course Models.Course

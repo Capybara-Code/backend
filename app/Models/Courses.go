@@ -30,6 +30,15 @@ func (course Course) FindOne(db *gorm.DB, id string) (Course, error) {
 	return course, nil
 }
 
+func (course Course) FindOneByAuthor(db *gorm.DB, author string) ([]Course, error) {
+	courses := []Course{}
+	err := db.Where("Author=?", author).Find(&courses).Error
+	if err != nil {
+		return []Course{}, err
+	}
+	return courses, nil
+}
+
 func (course Course) FindAll(db *gorm.DB) ([]Course, error) {
 	var courses []Course
 	err := db.Find(&courses).Error
