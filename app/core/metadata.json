@@ -1,0 +1,28 @@
+{
+    "name": "COINBARA",
+    "description": "COINBARA's Coins",
+    "properties": {
+        "simple_property": "COINBARA's coins",
+        "rich_property": {
+            "name": "CAPY",
+            "value": "001",
+            "display_value": "001",
+            "class": "emphasis",
+            "css": {
+                "color": "#ffffff",
+                "font-weight": "bold",
+                "text-decoration": "underline"
+            }
+        },
+        "array_property": {
+            "name": "COINBARA Coins",
+            "value": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "class": "emphasis"
+        }
+    }
+}

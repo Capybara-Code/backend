@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"context"
@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/algorand/go-algorand-sdk/client/v2/algod"
-	"github.com/algorand/go-algorand-sdk/future"
 
 	"github.com/algorand/go-algorand-sdk/crypto"
 
@@ -35,13 +34,16 @@ func hashFile(filename string) []byte {
 
 func main() {
 	// Create account
-	account := crypto.GenerateAccount()
-	myAddress := account.Address.String()
 
-	fmt.Printf("Alice's address: %s\n", myAddress)
+	account := crypto.GenerateAccount()
+	privAddress := account.PrivateKey
+	pubAddress := account.Address.String()
+
+	fmt.Printf("Alice's address: %s\n", pubAddress)
+	fmt.Printf("Private Key: %s\n", privAddress)
 
 	// Fund account
-	fmt.Println("Fund Alice's account using testnet faucet:\n--> https://dispenser.testnet.aws.algodev.network?account=" + myAddress)
+	fmt.Println("Fund Alice's account using testnet faucet:\n--> https://dispenser.testnet.aws.algodev.network?account=" + pubAddress)
 	fmt.Println("--> Once funded, press ENTER key to continue...")
 	fmt.Scanln()
 
@@ -76,8 +78,8 @@ func main() {
 		return
 	}
 	creator := account.Address.String()
-	assetName := "alciecoin@arc3"
-	unitName := "ALICECOI"
+	assetName := "coinbara"
+	unitName := "COINBARA"
 	assetURL := "https://path/to/my/fungible/asset/metadata.json"
 	assetMetadataHash := metadataHash
 	defaultFrozen := false
@@ -113,7 +115,7 @@ func main() {
 	fmt.Println("Submitting transaction...")
 
 	// Wait for confirmation
-	confirmedTxn, err := future.WaitForConfirmation(algodClient, txID, 4, context.Background())
+	confirmedTxn, err := transaction.WaitForConfirmation(algodClient, txID, 4, context.Background())
 	if err != nil {
 		fmt.Printf("Error waiting for confirmation on txID: %s\n", txID)
 		return
@@ -122,24 +124,24 @@ func main() {
 	assetId := confirmedTxn.AssetIndex
 	println("Created assetID:", assetId)
 
-	// Destroy asset
-	println("Destroying asset...")
-	txn, err = transaction.MakeAssetDestroyTxn(creator, note, txParams, assetId)
-	if err != nil {
-		fmt.Printf("Failed to destroy asset: %s\n", err)
-		return
-	}
-	txid, stx, err = crypto.SignTransaction(account.PrivateKey, txn)
-	txID, err = algodClient.SendRawTransaction(stx).Do(context.Background())
-
-	// Closeout account to dispenser
-	println("Closing creator account to dispenser...")
-	dispenser := "HZ57J3K46JIJXILONBBZOHX6BKPXEM2VVXNRFSUED6DKFD5ZD24PMJ3MVA"
-	txn, err = transaction.MakePaymentTxn(creator, dispenser, 0, nil, dispenser, txParams)
-	if err != nil {
-		fmt.Printf("Failed to close account: %s\n", err)
-		return
-	}
-	txid, stx, err = crypto.SignTransaction(account.PrivateKey, txn)
-	txID, err = algodClient.SendRawTransaction(stx).Do(context.Background())
+	//// Destroy asset
+	//println("Destroying asset...")
+	//txn, err = transaction.MakeAssetDestroyTxn(creator, note, txParams, assetId)
+	//if err != nil {
+	//	fmt.Printf("Failed to destroy asset: %s\n", err)
+	//	return
+	//}
+	//txid, stx, err = crypto.SignTransaction(account.PrivateKey, txn)
+	//txID, err = algodClient.SendRawTransaction(stx).Do(context.Background())
+	//
+	//// Closeout account to dispenser
+	//println("Closing creator account to dispenser...")
+	//dispenser := "HZ57J3K46JIJXILONBBZOHX6BKPXEM2VVXNRFSUED6DKFD5ZD24PMJ3MVA"
+	//txn, err = transaction.MakePaymentTxn(creator, dispenser, 0, nil, dispenser, txParams)
+	//if err != nil {
+	//	fmt.Printf("Failed to close account: %s\n", err)
+	//	return
+	//}
+	//txid, stx, err = crypto.SignTransaction(account.PrivateKey, txn)
+	//txID, err = algodClient.SendRawTransaction(stx).Do(context.Background())
 }
