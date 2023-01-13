@@ -3,12 +3,14 @@ package main
 import (
 	"capydemy/Models"
 	"capydemy/Utils"
+	"context"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	gogpt "github.com/sashabaranov/go-gpt3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -207,6 +209,29 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{
 			"course": course,
 		})
+	})
+	r.GET("/facts", func(c *gin.Context) {
+		client := gogpt.NewClient(os.Getenv("OPENAPI_KEY"))
+		ctx := context.Background()
+
+		req := gogpt.CompletionRequest{
+			Model:     gogpt.GPT3TextDavinci003,
+			MaxTokens: 100,
+			Prompt:    "Tell me a fact about capybara",
+		}
+		resp, err := client.CreateCompletion(ctx, req)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get fact",
+				"error":   err,
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"fact": resp.Choices[0].Text,
+		})
+
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
