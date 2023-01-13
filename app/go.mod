@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/AgoraIO-Community/go-tokenbuilder v1.0.0 // indirect
 	github.com/algorand/avm-abi v0.2.0 // indirect
 	github.com/algorand/go-algorand-sdk v1.24.0 // indirect
 	github.com/algorand/go-codec/codec v1.1.9 // indirect

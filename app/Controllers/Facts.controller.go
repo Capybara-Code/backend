@@ -14,9 +14,10 @@ func GetFact(c *gin.Context) {
 	ctx := context.Background()
 
 	req := gogpt.CompletionRequest{
-		Model:     gogpt.GPT3TextDavinci003,
-		MaxTokens: 100,
-		Prompt:    "Tell me a fact about capybara",
+		Model:       gogpt.GPT3TextDavinci003,
+		MaxTokens:   60,
+		Prompt:      "tell me an interesting fact about capybaras, about their weight, or their size, or their habitat or their predators, or their reputation, or their food, in the style of a reporter, a pirate, a politician, a memer or a programmer or an archaelogist, or an alien, or an ancient egyptian, or an underwater mermaid, or a crocodile (or anybody else)",
+		Temperature: 1,
 	}
 	resp, err := client.CreateCompletion(ctx, req)
 	if err != nil {
