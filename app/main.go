@@ -55,6 +55,20 @@ func main() {
 			"courses": courses,
 		})
 	})
+	r.GET("/courses/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		course, err := Models.Course{}.FindOne(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get course",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"course": course,
+		})
+	})
 	r.POST("/courses", func(c *gin.Context) {
 		var course Models.Course
 		if err := c.ShouldBindJSON(&course); err != nil {
@@ -67,6 +81,7 @@ func main() {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to create course",
+				"error":   err,
 			})
 			return
 		}
@@ -76,7 +91,7 @@ func main() {
 	})
 	r.DELETE("/courses/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		course, err := Models.Course{}.FindOne(db)
+		course, err := Models.Course{}.FindOne(db, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to get course",

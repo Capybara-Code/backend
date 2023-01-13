@@ -1,13 +1,14 @@
 package Models
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Course struct {
-	gorm.Model
-	CourseName string `gorm:"type:varchar(100)" json:"course_name"`
-	Author     string `gorm:"type:varchar(100);unique_index" json:"author"`
+	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	CourseName string    `gorm:"type:varchar(100)" json:"course_name"`
+	Author     string    `gorm:"type:varchar(100)" json:"author"`
 }
 
 func (course Course) Create(db *gorm.DB) (Course, error) {
@@ -18,8 +19,9 @@ func (course Course) Create(db *gorm.DB) (Course, error) {
 	return course, nil
 }
 
-func (course Course) FindOne(db *gorm.DB, id uint64) (Course, error) {
-	err := db.Where("ID = ?", id).First(&course).Error
+func (course Course) FindOne(db *gorm.DB, id string) (Course, error) {
+
+	err := db.Where("ID=?", id).First(&course).Error
 	if err != nil {
 		return Course{}, err
 	}
