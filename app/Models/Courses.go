@@ -9,6 +9,8 @@ type Course struct {
 	ID         uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	CourseName string    `gorm:"type:varchar(100)" json:"course_name"`
 	Author     string    `gorm:"type:varchar(100)" json:"author"`
+	Tags       string    `gorm:"type:varchar(100)" json:"tags"`
+	Price      int       `gorm:"type:int" json:"price"`
 }
 
 func (course Course) Create(db *gorm.DB) (Course, error) {

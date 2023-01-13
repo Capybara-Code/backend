@@ -1,16 +1,15 @@
 package main
 
 import (
+	"capydemy/Controllers"
 	"capydemy/Models"
 	"capydemy/Utils"
-	"context"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	gogpt "github.com/sashabaranov/go-gpt3"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -83,8 +82,10 @@ func main() {
 			})
 			return
 		}
+		user.Password = ""
 		c.JSON(http.StatusOK, gin.H{
 			"token": token,
+			"user":  user,
 		})
 
 	})
@@ -118,8 +119,10 @@ func main() {
 			})
 			return
 		}
+		user.Password = ""
 		c.JSON(http.StatusOK, gin.H{
 			"token": token,
+			"user":  user,
 		})
 
 	})
@@ -144,94 +147,10 @@ func main() {
 			"data":    data,
 		})
 	})
-	r.GET("/courses", func(c *gin.Context) {
-		courses, err := Models.Course{}.FindAll(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to get courses",
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"courses": courses,
-		})
-	})
-	r.GET("/courses/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		course, err := Models.Course{}.FindOne(db, id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to get course",
-				"error":   err,
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"course": course,
-		})
-	})
-	r.POST("/courses", func(c *gin.Context) {
-		var course Models.Course
-		if err := c.ShouldBindJSON(&course); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "failed to bind json",
-			})
-			return
-		}
-		course, err = course.Create(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to create course",
-				"error":   err,
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"course": course,
-		})
-	})
-	r.DELETE("/courses/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		course, err := Models.Course{}.FindOne(db, id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to get course",
-			})
-			return
-		}
-		course, err = course.Delete(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to delete course",
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"course": course,
-		})
-	})
-	r.GET("/facts", func(c *gin.Context) {
-		client := gogpt.NewClient(os.Getenv("OPENAPI_KEY"))
-		ctx := context.Background()
-
-		req := gogpt.CompletionRequest{
-			Model:     gogpt.GPT3TextDavinci003,
-			MaxTokens: 100,
-			Prompt:    "Tell me a fact about capybara",
-		}
-		resp, err := client.CreateCompletion(ctx, req)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to get fact",
-				"error":   err,
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"fact": resp.Choices[0].Text,
-		})
-
-	})
+	r.GET("/courses", Controllers.GetCourses(db))
+	r.GET("/courses/:id", Controllers.GetOneCourse(db))
+	r.POST("/courses", Controllers.CreateNewCourse(db))
+	r.DELETE("/courses/:id", Controllers.DeleteOneCourse(db))
+	r.GET("/facts", Controllers.GetFact)
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
