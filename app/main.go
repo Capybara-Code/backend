@@ -2,6 +2,7 @@ package main
 
 import (
 	"capydemy/Models"
+	"capydemy/Utils"
 	"log"
 	"net/http"
 	"os"
@@ -41,6 +42,85 @@ func main() {
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
+		})
+	})
+	r.POST("/signup", func(c *gin.Context) {
+		var user Models.User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "failed to bind json",
+			})
+			return
+		}
+		user, err = user.Create(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to create user",
+				"error":   err,
+			})
+			return
+		}
+		token, err := Utils.GenerateToken(user.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to generate token",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"token": token,
+		})
+
+	})
+	r.POST("/login", func(c *gin.Context) {
+		var user Models.User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "failed to bind json",
+			})
+			return
+		}
+		user, err = user.FindOne(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to find user",
+				"error":   err,
+			})
+			return
+		}
+		token, err := Utils.GenerateToken(user.UserID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to generate token",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"token": token,
+		})
+
+	})
+	r.POST("/validate", func(c *gin.Context) {
+		var token Utils.Token
+		if err := c.ShouldBindJSON(&token); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "failed to bind json",
+			})
+			return
+		}
+		data, err := Utils.ValidateToken(token)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to validate token",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"message": "token is valid",
+			"data":    data,
 		})
 	})
 	r.GET("/courses", func(c *gin.Context) {
