@@ -9,6 +9,40 @@ import (
 	"gorm.io/gorm"
 )
 
+func Signup(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var user Models.User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "failed to bind json",
+			})
+			return
+		}
+		user, err := user.Create(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to create user",
+				"error":   err,
+			})
+			return
+		}
+		token, err := Utils.GenerateToken(user.Userid)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to generate token",
+				"error":   err,
+			})
+			return
+		}
+		user.Password = ""
+		c.JSON(http.StatusOK, gin.H{
+			"token": token,
+			"user":  user,
+		})
+
+	}
+}
+
 func Login(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var userlogin Models.UserLogin

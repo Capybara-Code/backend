@@ -3,7 +3,6 @@ package main
 import (
 	"capydemy/Controllers"
 	"capydemy/Models"
-	"capydemy/Utils"
 	"log"
 	"net/http"
 	"os"
@@ -45,50 +44,8 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.GET("/users", func(c *gin.Context) {
-		users, err := Models.User{}.FindAll(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to find users",
-				"error":   err,
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"users": users,
-		})
-	})
-	r.POST("/signup", func(c *gin.Context) {
-		var user Models.User
-		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "failed to bind json",
-			})
-			return
-		}
-		user, err = user.Create(db)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to create user",
-				"error":   err,
-			})
-			return
-		}
-		token, err := Utils.GenerateToken(user.Userid)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to generate token",
-				"error":   err,
-			})
-			return
-		}
-		user.Password = ""
-		c.JSON(http.StatusOK, gin.H{
-			"token": token,
-			"user":  user,
-		})
-
-	})
+	r.GET("/users", Controllers.GetUsers(db))
+	r.POST("/signup", Controllers.Signup(db))
 	r.POST("/login", Controllers.Login(db))
 	r.POST("/validate", Controllers.ValidateToken)
 	r.GET("/courses", Controllers.GetCourses(db))
