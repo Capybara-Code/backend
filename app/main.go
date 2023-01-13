@@ -44,7 +44,7 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.GET("/rtc", Controllers.GetRoomToken)
+	r.GET("/rtc/:room_name", Controllers.GetRoomToken)
 	r.GET("/users", Controllers.GetUsers(db))
 	r.POST("/signup", Controllers.Signup(db))
 	r.POST("/login", Controllers.Login(db))

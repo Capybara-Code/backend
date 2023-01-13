@@ -9,9 +9,10 @@ import (
 )
 
 func GetRoomToken(c *gin.Context) {
+	room_name := c.Param("room_name")
 	ctx := netless.RoomContent{
 		Role: netless.AdminRole,
-		Uuid: "802e8a20936f11ed86a26bf46008d7bd",
+		Uuid: room_name,
 	}
 	netlessRoomToken := netless.RoomToken(
 		os.Getenv("AK"),
@@ -20,6 +21,6 @@ func GetRoomToken(c *gin.Context) {
 	)
 	c.JSON(http.StatusAccepted, gin.H{
 		"room_token": netlessRoomToken,
-		"room_uuid":  "802e8a20936f11ed86a26bf46008d7bd",
+		"room_uuid":  room_name,
 	})
 }
