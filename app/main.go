@@ -73,7 +73,7 @@ func main() {
 			})
 			return
 		}
-		token, err := Utils.GenerateToken(user.UserID)
+		token, err := Utils.GenerateToken(user.Userid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to generate token",
@@ -108,7 +108,7 @@ func main() {
 			})
 			return
 		}
-		token, err := Utils.GenerateToken(user.UserID)
+		token, err := Utils.GenerateToken(user.Userid)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to generate token",
