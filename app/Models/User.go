@@ -1,6 +1,9 @@
 package Models
 
-import "gorm.io/gorm"
+import (
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -12,7 +15,12 @@ type User struct {
 }
 
 func (user User) Create(db *gorm.DB) (User, error) {
-	err := db.Create(&user).Error
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	if err != nil {
+		return User{}, err
+	}
+	user.Password = string(hashedPassword)
+	err = db.Create(&user).Error
 	if err != nil {
 		return User{}, err
 	}
@@ -21,22 +29,6 @@ func (user User) Create(db *gorm.DB) (User, error) {
 
 func (user User) FindOne(db *gorm.DB) (User, error) {
 	err := db.First(&user).Error
-	if err != nil {
-		return User{}, err
-	}
-	return user, nil
-}
-
-func (user User) Update(db *gorm.DB) (User, error) {
-	err := db.Save(&user).Error
-	if err != nil {
-		return User{}, err
-	}
-	return user, nil
-}
-
-func (user User) Delete(db *gorm.DB) (User, error) {
-	err := db.Delete(&user).Error
 	if err != nil {
 		return User{}, err
 	}
