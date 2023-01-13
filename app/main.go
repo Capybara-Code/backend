@@ -44,6 +44,19 @@ func main() {
 			"message": "pong",
 		})
 	})
+	r.GET("/users", func(c *gin.Context) {
+		users, err := Models.User{}.FindAll(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to find users",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"users": users,
+		})
+	})
 	r.POST("/signup", func(c *gin.Context) {
 		var user Models.User
 		if err := c.ShouldBindJSON(&user); err != nil {
@@ -74,18 +87,24 @@ func main() {
 
 	})
 	r.POST("/login", func(c *gin.Context) {
-		var user Models.User
-		if err := c.ShouldBindJSON(&user); err != nil {
+		var userlogin Models.UserLogin
+		if err := c.ShouldBindJSON(&userlogin); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "failed to bind json",
 			})
 			return
 		}
-		user, err = user.FindOne(db)
+		user, err := Models.User{}.FindOne(db, userlogin.UserID)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to find user",
 				"error":   err,
+			})
+			return
+		}
+		if !user.ValidatePassword(userlogin.Password) {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "invalid password",
 			})
 			return
 		}
