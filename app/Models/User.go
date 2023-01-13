@@ -19,15 +19,6 @@ func (user User) Create(db *gorm.DB) (User, error) {
 	return user, nil
 }
 
-func (user User) FindAll(db *gorm.DB) ([]User, error) {
-	var users []User
-	err := db.Find(&users).Error
-	if err != nil {
-		return []User{}, err
-	}
-	return users, nil
-}
-
 func (user User) FindOne(db *gorm.DB) (User, error) {
 	err := db.First(&user).Error
 	if err != nil {

@@ -35,7 +35,7 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to connect database", err)
 	}
-	db.AutoMigrate(&Models.User{})
+	db.AutoMigrate(&Models.User{}, &Models.Course{})
 	r := gin.Default()
 	r.Use(CORSMiddleware())
 	r.GET("/", func(c *gin.Context) {
@@ -43,18 +43,55 @@ func main() {
 			"message": "pong",
 		})
 	})
-	r.GET("/users", func(c *gin.Context) {
-		var users []Models.User
-		users, err := Models.User{}.FindAll(db)
+	r.GET("/courses", func(c *gin.Context) {
+		courses, err := Models.Course{}.FindAll(db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "failed to get users",
+				"message": "failed to get courses",
 			})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{
-			"message": "success",
-			"data":    users,
+			"courses": courses,
+		})
+	})
+	r.POST("/courses", func(c *gin.Context) {
+		var course Models.Course
+		if err := c.ShouldBindJSON(&course); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "failed to bind json",
+			})
+			return
+		}
+		course, err = course.Create(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to create course",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"course": course,
+		})
+	})
+	r.DELETE("/courses/:id", func(c *gin.Context) {
+		id := c.Param("id")
+		course, err := Models.Course{}.FindOne(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get course",
+			})
+			return
+		}
+		course, err = course.Delete(db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to delete course",
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"course": course,
 		})
 	})
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
