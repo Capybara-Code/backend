@@ -1,7 +1,7 @@
 {
     "name": "COINBARA",
     "description": "COINBARA's Coins",
-    "image": "https://frontend-kohl-beta.vercel.app/static/media/capy.34ed8d72c7d661ac4f77021322c23794.svg",
+    "image": "https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=720&q=80",
     "properties": {
         "simple_property": "COINBARA's coins",
         "rich_property": {
