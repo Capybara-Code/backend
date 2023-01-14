@@ -46,6 +46,7 @@ func main() {
 	})
 	r.GET("/rtc", Controllers.GetRoomToken)
 	r.GET("/users", Controllers.GetUsers(db))
+	r.POST("/users/:user_id/:course_id", Controllers.AddCourseToUser(db))
 	r.POST("/signup", Controllers.Signup(db))
 	r.POST("/login", Controllers.Login(db))
 	r.POST("/validate", Controllers.ValidateToken)

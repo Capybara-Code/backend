@@ -7,12 +7,22 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	Userid    string    `gorm:"unique_index;not_null;type:varchar(100)" json:"user_id"`
-	Password  string    `gorm:"type:varchar(100)" json:"password"`
-	Email     string    `gorm:"type:varchar(100);unique_index" json:"email"`
-	IsTutor   bool      `gorm:"type:bool;default:false" json:"is_tutor"`
-	Interests string    `gorm:"type:varchar(100)" json:"interests"`
+	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
+	Userid       string    `gorm:"unique_index;not_null;type:varchar(100)" json:"user_id"`
+	Password     string    `gorm:"type:varchar(100)" json:"password"`
+	Email        string    `gorm:"type:varchar(100);unique_index" json:"email"`
+	IsTutor      bool      `gorm:"type:bool;default:false" json:"is_tutor"`
+	Interests    string    `gorm:"type:varchar(100)" json:"interests"`
+	Ownedcourses []string  `gorm:"type:varchar(100)[]" json:"owned_courses"`
+}
+
+func (user User) UpdateCourses(db *gorm.DB, course string) (User, error) {
+	user.Ownedcourses = append(user.Ownedcourses, course)
+	err := db.Save(&user).Error
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
 }
 
 func (user User) Create(db *gorm.DB) (User, error) {
