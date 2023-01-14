@@ -8,6 +8,8 @@ require (
 	gorm.io/driver/postgres v1.4.6
 )
 
+require github.com/lithammer/fuzzysearch v1.1.5 // indirect
+
 require (
 	github.com/AgoraIO-Community/go-tokenbuilder v1.0.0 // indirect
 	github.com/algorand/avm-abi v0.2.0 // indirect
@@ -28,6 +30,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/lib/pq v1.10.7
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

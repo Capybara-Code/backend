@@ -10,8 +10,9 @@ type Course struct {
 	CourseName  string    `gorm:"type:varchar(100)" json:"course_name"`
 	Author      string    `gorm:"type:varchar(100)" json:"author"`
 	Tags        string    `gorm:"type:varchar(100)" json:"tags"`
-	Price       int       `gorm:"type:int" json:"price"`
+	Price       float64   `gorm:"type:float" json:"price"`
 	Description string    `gorm:"type:varchar(200)" json:"description"`
+	Authorpk    string    `gorm:"type:varchar(100)" json:"author_pk"`
 }
 
 func (course Course) Create(db *gorm.DB) (Course, error) {

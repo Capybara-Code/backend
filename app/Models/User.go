@@ -2,18 +2,19 @@ package Models
 
 import (
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
-	Userid       string    `gorm:"unique_index;not_null;type:varchar(100)" json:"user_id"`
-	Password     string    `gorm:"type:varchar(100)" json:"password"`
-	Email        string    `gorm:"type:varchar(100);unique_index" json:"email"`
-	IsTutor      bool      `gorm:"type:bool;default:false" json:"is_tutor"`
-	Interests    string    `gorm:"type:varchar(100)" json:"interests"`
-	Ownedcourses []string  `gorm:"type:varchar(100)[]" json:"owned_courses"`
+	ID           uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4()"`
+	Userid       string         `gorm:"unique_index;not_null;type:varchar(100)" json:"user_id"`
+	Password     string         `gorm:"type:varchar(100)" json:"password"`
+	Email        string         `gorm:"type:varchar(100);unique_index" json:"email"`
+	IsTutor      bool           `gorm:"type:bool;default:false" json:"is_tutor"`
+	Interests    string         `gorm:"type:varchar(100)" json:"interests"`
+	Ownedcourses pq.StringArray `gorm:"type:string[];not_null" json:"owned_courses"`
 }
 
 func (user User) UpdateCourses(db *gorm.DB, course string) (User, error) {
@@ -31,6 +32,7 @@ func (user User) Create(db *gorm.DB) (User, error) {
 		return User{}, err
 	}
 	user.Password = string(hashedPassword)
+	user.Ownedcourses = []string{}
 	err = db.Create(&user).Error
 	if err != nil {
 		return User{}, err
