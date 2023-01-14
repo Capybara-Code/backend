@@ -27,6 +27,23 @@ func GetCourses(db *gorm.DB) gin.HandlerFunc {
 
 }
 
+func GetCoursesBySearch(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		search := c.Query("search")
+		courses, err := Models.Course{}.FindFuzzy(db, search)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to get course",
+				"error":   err,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"course": courses,
+		})
+	}
+}
+
 func GetOneCourse(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.Param("id")

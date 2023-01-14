@@ -23,6 +23,15 @@ func (course Course) Create(db *gorm.DB) (Course, error) {
 	return course, nil
 }
 
+func (course Course) FindFuzzy(db *gorm.DB, search string) ([]Course, error) {
+	courses := []Course{}
+	err := db.Where("Author LIKE ?", "%"+search+"%").Find(&courses).Error
+	if err != nil {
+		return []Course{}, err
+	}
+	return courses, nil
+}
+
 func (course Course) FindOne(db *gorm.DB, id string) (Course, error) {
 
 	err := db.Where("ID=?", id).First(&course).Error

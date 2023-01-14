@@ -51,6 +51,7 @@ func main() {
 	r.POST("/login", Controllers.Login(db))
 	r.POST("/validate", Controllers.ValidateToken)
 	r.GET("/courses", Controllers.GetCourses(db))
+	r.GET("/courses/search/:search", Controllers.GetCoursesBySearch(db))
 	r.GET("/courses/:id", Controllers.GetOneCourse(db))
 	r.GET("/courses/author/:user_id", Controllers.GetCoursesByAuthor(db))
 	r.POST("/courses", Controllers.CreateNewCourse(db))
